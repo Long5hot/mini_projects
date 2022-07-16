@@ -1,0 +1,81 @@
+C51 COMPILER V9.60.0.0   I2CBYTEWRITEFRAME                                                 07/15/2022 11:35:26 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE I2CBYTEWRITEFRAME
+OBJECT MODULE PLACED IN .\Objects\i2cByteWriteFrame.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE i2cByteWriteFrame.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\
+                    -Listings\i2cByteWriteFrame.lst) TABS(2) OBJECT(.\Objects\i2cByteWriteFrame.obj)
+
+line level    source
+
+   1          #include "header.h"
+   2          void i2c_byte_write_frame(u8 sa, u8 mr, u8 d) 
+   3          {
+   4   1        
+   5   1        bit r;
+   6   1        i2cStart();
+   7   1        
+   8   1        i2cWrite(sa); //SA + W
+   9   1        r = i2cAck();
+  10   1        if(r==1) 
+  11   1          goto OUT;
+  12   1        
+  13   1        i2cWrite(mr);
+  14   1        r = i2cAck();
+  15   1        if(r==1)
+  16   1          goto OUT;
+  17   1        
+  18   1        i2cWrite(d);
+  19   1        r = i2cAck();
+  20   1        
+  21   1        OUT:
+  22   1          i2cStop();
+  23   1      }
+  24          
+  25          u8 i2c_byte_read_frame(u8 sa, u8 mr) {
+  26   1        
+  27   1        u8 temp;
+  28   1        bit r;
+  29   1        i2cStart();
+  30   1        
+  31   1        i2cWrite(sa); //SA + W
+  32   1        r = i2cAck();
+  33   1        if(r==1) 
+  34   1          goto OUT;
+  35   1        
+  36   1        i2cWrite(mr);
+  37   1        r = i2cAck();
+  38   1        if(r==1)
+  39   1          goto OUT;
+  40   1        
+  41   1        i2cStart(); //restart condn 
+  42   1        
+  43   1        i2cWrite(sa|1); // SA + R
+  44   1        r = i2cAck();
+  45   1        if(r==1) 
+  46   1          goto OUT;
+  47   1        
+  48   1        temp = i2cRead();
+  49   1        i2cNoAck();
+  50   1        
+  51   1        OUT:
+  52   1          i2cStop();
+  53   1        return temp;
+  54   1        
+C51 COMPILER V9.60.0.0   I2CBYTEWRITEFRAME                                                 07/15/2022 11:35:26 PAGE 2   
+
+  55   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    114    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       2
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

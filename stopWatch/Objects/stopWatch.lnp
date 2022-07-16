@@ -1,0 +1,6 @@
+".\Objects\i2cFields.obj",
+".\Objects\delay.obj",
+".\Objects\main.obj",
+".\Objects\i2cByteWriteFrame.obj" 
+TO ".\Objects\stopWatch" 
+PRINT(".\Listings\stopWatch.m51") RAMSIZE(256) 

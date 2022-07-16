@@ -1,0 +1,9 @@
+".\Objects\i2cFields.obj",
+".\Objects\delay.obj",
+".\Objects\main.obj",
+".\Objects\i2cByteWriteFrame.obj",
+".\Objects\lcdDriver.obj",
+".\Objects\stopWatch.obj",
+".\Objects\extInterrupt.obj" 
+TO ".\Objects\MainstopWatch" 
+PRINT(".\Listings\MainstopWatch.m51") RAMSIZE(256) 

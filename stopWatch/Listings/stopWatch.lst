@@ -1,0 +1,148 @@
+C51 COMPILER V9.60.0.0   STOPWATCH                                                         07/15/2022 11:35:26 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE STOPWATCH
+OBJECT MODULE PLACED IN .\Objects\stopWatch.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE stopWatch.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings
+                    -\stopWatch.lst) TABS(2) OBJECT(.\Objects\stopWatch.obj)
+
+line level    source
+
+   1          /*StopWatch driver.c*/
+   2          #include "header.h"
+   3          
+   4          void setTime(void) {
+   5   1        hour=0;
+   6   1        min =0;
+   7   1        sec =0;
+   8   1        
+   9   1        //Set hour in hour variable
+  10   1        lcdCmd(0x01);
+  11   1        lcdCmd(0x80);
+  12   1        lcdString("Set hour");
+  13   1        do{
+  14   2          lcdCmd(0xC0);
+  15   2          lcdData((hour/10)+48);
+  16   2          lcdData((hour%(10))+48);
+  17   2          while((nextSetting!=0)&&(increase!=0));
+  18   2          hour++;
+  19   2          while(increase==0);
+  20   2        }while(nextSetting!=0) ;
+  21   1        hour--;
+  22   1        while(nextSetting==0); //Waiting for Switch release
+  23   1        
+  24   1        //Set minute in Minute Variable
+  25   1        lcdCmd(0x01);
+  26   1        lcdCmd(0x80);
+  27   1        lcdString("Set Minute");
+  28   1        do{
+  29   2          lcdCmd(0xC0);
+  30   2          lcdData((min/10)+48);
+  31   2          lcdData((min%10)+48);
+  32   2          while((nextSetting!=0)&&(increase!=0));
+  33   2          min++;
+  34   2          while(increase==0);
+  35   2        }while(nextSetting!=0) ;
+  36   1        min--;
+  37   1        while(nextSetting==0); //Waiting for Switch release
+  38   1        lcdCmd(0x01);
+  39   1        
+  40   1        i2c_byte_write_frame(0xD0,0x2,hour);
+  41   1        i2c_byte_write_frame(0xD0,0x1,min);
+  42   1        i2c_byte_write_frame(0xD0,0x0,sec);
+  43   1      }
+  44          
+  45          void setDate(void) {
+  46   1        date=1;
+  47   1        month=1;
+  48   1        year=1;
+  49   1        dayofWeak=1;
+  50   1        
+  51   1        //Day of the weak
+  52   1        lcdCmd(0x01);
+  53   1        lcdCmd(0x80);
+  54   1        lcdString("Which day is it??");
+C51 COMPILER V9.60.0.0   STOPWATCH                                                         07/15/2022 11:35:26 PAGE 2   
+
+  55   1        do {
+  56   2          AGAIN:
+  57   2          lcdCmd(0xC0);
+  58   2          lcdString(DOW[dayofWeak-1]);
+  59   2          while((nextSetting!=0)&&(increase!=0));
+  60   2          dayofWeak++;
+  61   2          while(increase==0);
+  62   2          if(dayofWeak>7) {
+  63   3            dayofWeak=1;
+  64   3            goto AGAIN;
+  65   3          } 
+  66   2        }while(nextSetting!=0);
+  67   1          dayofWeak--;
+  68   1        while(nextSetting==0);
+  69   1        
+  70   1        //set Date
+  71   1        lcdCmd(0x01);
+  72   1        lcdCmd(0x80);
+  73   1        lcdString("Set Date");
+  74   1        do {
+  75   2          lcdCmd(0xC0);
+  76   2          lcdData((date/10)+48);
+  77   2          lcdData((date%10)+48);
+  78   2          while((nextSetting!=0)&&(increase!=0)); //Wait hear if none of the buttons are pressed
+  79   2          date++;
+  80   2          while(increase==0); //Wait till unpressed
+  81   2        } while(nextSetting!=0);
+  82   1        date--;
+  83   1        while(nextSetting==0); //Wait till unpressed
+  84   1      
+  85   1        //set month
+  86   1        lcdCmd(0x01);
+  87   1        lcdCmd(0x80);
+  88   1        lcdString("Set Month");
+  89   1        do {
+  90   2          lcdCmd(0xC0);
+  91   2          lcdData((month/10)+48);
+  92   2          lcdData((month%10)+48);
+  93   2          while((nextSetting!=0)&&(increase!=0)); //Wait hear if none of the buttons are pressed
+  94   2          month++;
+  95   2          while(increase==0); //Wait till unpressed
+  96   2        } while(nextSetting!=0);
+  97   1        month--;
+  98   1        while(nextSetting==0); //Wait till unpressed
+  99   1      
+ 100   1        //set year
+ 101   1        lcdCmd(0x01);
+ 102   1        lcdCmd(0x80);
+ 103   1        lcdString("Set Year");
+ 104   1        do {
+ 105   2          lcdCmd(0xC0);
+ 106   2          lcdData((year/10)+48);
+ 107   2          lcdData((year%10)+48);
+ 108   2          while((nextSetting!=0)&&(increase!=0)); //Wait hear if none of the buttons are pressed
+ 109   2          year++;
+ 110   2          while(increase==0); //Wait till unpressed
+ 111   2        } while(nextSetting!=0);
+ 112   1        year--;
+ 113   1        while(nextSetting==0); //Wait till unpressed
+ 114   1        
+ 115   1        i2c_byte_write_frame(0xD0,0x3,dayofWeak);
+ 116   1        i2c_byte_write_frame(0xD0,0x4,date);
+C51 COMPILER V9.60.0.0   STOPWATCH                                                         07/15/2022 11:35:26 PAGE 3   
+
+ 117   1        i2c_byte_write_frame(0xD0,0x5,month);
+ 118   1        i2c_byte_write_frame(0xD0,0x6,year);
+ 119   1        
+ 120   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    506    ----
+   CONSTANT SIZE    =     66    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
