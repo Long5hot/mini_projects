@@ -7,8 +7,9 @@ void save_csv_from_scratch(struct student * head) {
         return;
     }
     FILE * fp = fopen("student.csv", "w");
+    fprintf(fp, "id,name,physics,chemistry,maths,total\n");
     while (temp != NULL) {
-        fprintf(fp, "%d,%s,%d,%d,%d,%d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
+        fprintf(fp, "%d , %s , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
         temp = temp->next;
     }
     fclose(fp);
@@ -22,8 +23,13 @@ void append_csv(struct student * head) {
     }
     FILE * fp = fopen("student.csv", "a");
     while (temp != NULL) {
-        fprintf(fp, "%d,%s,%d,%d,%d,%d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
+        fprintf(fp, "%d , %s , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
         temp = temp->next;
     }
     fclose(fp);
 }
+
+/*
+fprintf(fp, "%d , %[^\n] , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
+        temp = temp->next;
+        */
