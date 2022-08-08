@@ -29,6 +29,10 @@
     "**/.vscode/**"
   ],
   "files.associations": {
-    "header.h": "c"
+    "header.h": "c",
+    "stdio.h": "c",
+    "stdio_s.h": "c",
+    "string.h": "c",
+    "stdlib.h": "c"
   }
 }

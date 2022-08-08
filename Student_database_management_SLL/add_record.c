@@ -66,30 +66,6 @@ void add_student_end(struct student ** head) {
     }
 }
 
-void load_csv(struct student ** head) {
-    FILE * fp = fopen("student.csv", "r");
-    if (fp == NULL) {
-        printf("\nFile not found\n");
-        return;
-    }
-    char bufftemp[38];
-    fgets(bufftemp, 38, fp);
-    struct student * new_node = (struct student *)malloc(sizeof(struct student));
-    struct student * temp=NULL;
-    while (fscanf(fp, "%d , %s , %d , %d , %d , %d\n", &new_node->id, new_node->name, &new_node->physics, &new_node->chemistry, &new_node->maths, &new_node->total) != EOF) {
-    new_node->next = NULL;
-        if (*head == NULL) {
-            *head = new_node;
-            temp = new_node;
-        } else {
-            temp->next = new_node;
-            temp = new_node;
-        }
-        new_node = (struct student *)malloc(sizeof(struct student));  
-    }
-    fclose(fp);
-}
-
 /*
 
 
