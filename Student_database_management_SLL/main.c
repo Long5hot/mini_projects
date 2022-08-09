@@ -1,19 +1,30 @@
 #include"header.h"
 
 void main() {
-    struct student * head = NULL;
-    int choice;
+    STUDENT * head = NULL;
+    int choice, count;
     while (1) {
-        printf("\n1. Add student at beginning\n");
-        printf("2. Add student at end\n");
-        printf("3. Add student at middle\n");
+        printf("\n1. Add record at begining in database\n");
+        printf("2. Add record at end in database\n");
+        printf("3. Add record in middle in database\n");
         printf("4. Clear Screen\n");
-        printf("5. Display all records in ascending order\n");
-        printf("6. Save records to csv file\n");
-        printf("7. Append records to csv file\n");
-        printf("8. Load records from csv file\n");
-        printf("18. Exit\n");
-        printf("Enter your choice: ");
+        printf("5. Display all records by ascending order in database\n");
+        printf("6. Display all records by reverse order in database\n");
+        printf("7. Save all records in database to file\n");
+        printf("8. Append all records in database to file\n");
+        printf("9. Load all records in database from file\n");
+        printf("10. Count all records in database\n");
+        printf("11. Delete all record in database\n");
+        printf("12. Delete record by id in database\n");
+        printf("13. Delete record by position in database\n");
+        printf("14. Sort all records in database by id\n");
+        printf("15. Sort all records in database by name\n");
+        printf("16. Reverse all records in database\n");
+        printf("17. Sort any other csv file in present working directory\n");
+        printf("18. Open Query mode\n");
+        printf("19. Exit\n");
+        printf("\nEnter your choice:  ");
+        
         scanf(" %d", &choice);
         switch (choice) {
             case 1:
@@ -32,24 +43,44 @@ void main() {
                 display_ascending_order(head);
                 break;
             case 6:
-                save_csv_from_scratch(head);
+                display_reverse_order(head);
                 break;
             case 7:
-                append_csv(head);
+                save_csv_from_scratch(head);
                 break;
             case 8:
-                load_csv(&head);
+                append_csv(head);
                 break;
             case 9:
+                load_csv(&head);
+                break;
+            case 10:
+                count = count_records(head);
+                system("clear");
+                printf("Total number of records: %d\n", count);
+            case 11:
                 delete_all_records(&head);
                 break;
-            case 10: 
+            case 12:
                 delete_record_by_id(&head);
                 break;
-            case 11:
+            case 13:   
+                delete_record_by_position(&head);
+                break;
+            case 14:
+                sort_records_by_id(head);
+                break;
+            case 15:
+                sort_records_by_name(head);
+                break;
+            case 16:
+                reverse_data(head);
+                break;
+            case 17:
                 sort_csv_file();
                 break;
-            case 18:
+
+            case 19:
                 exit(0);
                 break;
             default:
@@ -60,8 +91,8 @@ void main() {
 }
 
 
-void add_student_begin(struct student ** head) {
-    struct student * new_node = (struct student *)malloc(sizeof(struct student));
+void add_student_begin(STUDENT ** head) {
+    STUDENT * new_node = (STUDENT *)malloc(sizeof(STUDENT));
     printf("Enter student id: ");
     scanf("%d", &new_node->id);
     printf("Enter student name: ");
@@ -72,38 +103,30 @@ void add_student_begin(struct student ** head) {
     scanf("%d", &new_node->chemistry);
     printf("Enter student maths marks: ");
     scanf("%d", &new_node->maths);
-    new_node->total = new_node->physics + new_node->chemistry + new_node->maths;
+    printf("Enter student english marks: ");
+    scanf("%d", &new_node->english);
+    printf("Enter student computer marks: ");
+    scanf("%d", &new_node->computer);
+    new_node->total = new_node->physics + new_node->chemistry + new_node->maths + new_node->english + new_node->computer;
     new_node->next = *head;
     *head = new_node;
+    system("clear");
 }
 
 
 
-void add_student_middle(struct student ** head) {
-    struct student * new_node = (struct student *)malloc(sizeof(struct student));
-    printf("Enter student id: ");
-    scanf("%d", &new_node->id);
-    printf("Enter student name: ");
-    scanf(" %[^\n]", new_node->name);
-    printf("Enter student physics marks: ");
-    scanf("%d", &new_node->physics);
-    printf("Enter student chemistry marks: ");
-    scanf("%d", &new_node->chemistry);
-    printf("Enter student maths marks: ");
-    scanf("%d", &new_node->maths);
-    new_node->total = new_node->physics + new_node->chemistry + new_node->maths;
-    new_node->next = *head;
-    while(new_node->id > (*head)->id) {
-        *head = (*head)->next;
+void add_student_middle(STUDENT ** head) {
+
+    int ret;
+    STUDENT * new_node = (STUDENT *)malloc(sizeof(STUDENT));
+    AGAIN:
+        printf("Enter student id: ");
+        scanf("%d", &new_node->id);
+        ret = search_record_by_id(*head, new_node->id);
+    if (ret == true) {
+        printf("Student with id %d already exists\n", new_node->id);
+        goto AGAIN;
     }
-    new_node->next = (*head)->next;
-    (*head)->next = new_node;
-}
-
-void add_student_end(struct student ** head) {
-    struct student * new_node = (struct student *)malloc(sizeof(struct student));
-    printf("Enter student id: ");
-    scanf("%d", &new_node->id);
     printf("Enter student name: ");
     scanf(" %[^\n]", new_node->name);
     printf("Enter student physics marks: ");
@@ -112,94 +135,226 @@ void add_student_end(struct student ** head) {
     scanf("%d", &new_node->chemistry);
     printf("Enter student maths marks: ");
     scanf("%d", &new_node->maths);
-    new_node->total = new_node->physics + new_node->chemistry + new_node->maths;
-    new_node->next = NULL;
-    struct student * temp = *head;
-    if (temp == NULL) {
+    printf("Enter student english marks: ");
+    scanf("%d", &new_node->english);
+    printf("Enter student computer marks: ");
+    scanf("%d", &new_node->computer);
+    new_node->total = new_node->physics + new_node->chemistry + new_node->maths + new_node->english + new_node->computer;
+    new_node->next = *head;
+    if(*head==NULL || new_node->id < (*head)->id) {
+        new_node->next = *head;
         *head = new_node;
-    } else {
-        while (temp->next != NULL) {
+    }
+    else {
+        STUDENT * temp = *head;
+        while(temp->next != NULL && temp->next->id < new_node->id) 
             temp = temp->next;
-        }
+        
+        new_node->next = temp->next;
         temp->next = new_node;
     }
+    system("clear");
+}
+
+void add_student_end(STUDENT ** head) {
+    STUDENT * new_node = (STUDENT *)malloc(sizeof(STUDENT));
+    printf("Enter student id: ");
+    scanf("%d", &new_node->id);
+    printf("Enter student name: ");
+    scanf(" %[^\n]", new_node->name);
+    printf("Enter student physics marks: ");
+    scanf("%d", &new_node->physics);
+    printf("Enter student chemistry marks: ");
+    scanf("%d", &new_node->chemistry);
+    printf("Enter student maths marks: ");
+    scanf("%d", &new_node->maths);
+    printf("Enter student english marks: ");
+    scanf("%d", &new_node->english);
+    printf("Enter student computer marks: ");
+    scanf("%d", &new_node->computer);
+    new_node->total = new_node->physics + new_node->chemistry + new_node->maths + new_node->english + new_node->computer;
+    new_node->next = NULL;
+    STUDENT * last;
+    if (*head == NULL) {
+        *head = new_node;
+    } else {
+        last = *head;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        last->next = new_node;
+    }
+    system("clear");
 }
 
 
-void display_ascending_order(struct student * head) {
+void display_ascending_order(STUDENT * head) {
     system("clear");
-    struct student * temp = head;
+    STUDENT * temp = head;
     if(temp == NULL) {
         printf("\nNo records found\n");
         return;
     }
+    float avg;
     
-    printf("\n id             name  physics chemistry maths total\n\n");
+
+    printf("\n id        name     physics  chemistry  maths  english  computer  percentage\n\n");
+    
     while (temp != NULL) {
-        printf("%3d %15s    %3d      %3d      %3d   %3d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
+        avg = temp->total / 5;
+        printf("%3d %13s     %3d       %3d      %3d     %3d       %3d       %.2f\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->english, temp->computer,avg);
         temp = temp->next;
     }
 }
 
-void display_reverse_order(struct student * head) {
+void display_reverse_order(STUDENT * head) {
     system("clear");
-    struct student * temp = head;
-    if(temp == NULL) {
+    if(head == NULL) {
         printf("\nNo records found\n");
         return;
     }
-    printf("\n id             name  physics chemistry maths total\n\n");
-    int count = count_records(head);
+    printf("\n id        name     physics  chemistry  maths  english  computer  percentage\n\n");
+    
+    STUDENT * temp;
     int i, j;
-    for(i=0; i<count-1; count++) {
+    float avg;
+    
+
+    int count = count_records(head);
+    for(i=0; i<count; i++) {
+        temp=head;
         for(j=0; j<count-1-i; j++) {
             temp = temp->next;
         }
-        printf("%3d %15s    %3d      %3d      %3d   %3d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
+        avg = temp->total / 5;
+        printf("%3d %13s     %3d       %3d      %3d     %3d       %3d       %.2f\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->english, temp->computer,avg);
     }
 }
 
-void delete_all_records(struct student ** head) {
-    struct student * temp = *head;
-    while (temp != NULL) {
+void delete_all_records(STUDENT ** head) {
+    if(*head == NULL) {
+        printf("\nNo records found\n");
+        return;
+    }
+    STUDENT * temp = *head;
+    int count;
+    while (temp) {
         *head = (*head)->next;
         free(temp);
         temp = *head;
+        count++;
     }
+    system("clear");
+    printf("\n%d records deleted\n", count);
 }
 
-void delete_record_by_id(struct student ** head) {
-    struct student * temp = *head;
+void delete_record_by_id(STUDENT ** head) {
+    if(*head == NULL) {
+        printf("\nNo records found\n");
+        return;
+    }
+    STUDENT * del = *head, *ptr;
     int id;
     printf("Enter student id to delete: ");
     scanf("%d", &id);
-    while (temp != NULL) {
-        if (temp->id == id) {
-            *head = (*head)->next;
-            free(temp);
-            //break;
+    while (del) {
+        if (del->id == id) {
+            if(del==*head)
+                *head = del->next;
+            else {
+                ptr->next = del->next;
+            }
+            free(del);
+            break;
         }
-        temp = temp->next;
+        ptr = del;
+        del = del->next;
     }
+    system("clear");
+    printf("\nRecord deleted\n");
 }
 
-void delete_record_by_name(struct student ** head) {
-    struct student * temp = *head;
+void delete_record_by_name(STUDENT ** head) {
+    if(*head == NULL) {
+        printf("\nNo records found\n");
+        return;
+    }
+    STUDENT * del = *head, *last;
     char name[20];
     printf("Enter student name to delete: ");
     scanf(" %[^\n]", name);
-    while (temp != NULL) {
-        if (strcmp(temp->name, name) == 0) {
-            *head = (*head)->next;
-            free(temp);
+    while (del) {
+        if (strcmp(del->name, name) == 0) {
+            if(del==*head)
+                *head = del->next;
+            else {
+                last->next = del->next;
+            }
+            free(del);
             break;
         }
-        temp = temp->next;
+        last = del;
+        del = del->next;
     }
+    system("clear");
+    printf("\nRecord deleted\n");
 }
 
+void delete_record_by_position(STUDENT ** head) {
+    if(*head == NULL) {
+        printf("\nNo records found\n");
+        return;
+    }
+    STUDENT * del = *head, *prev;
+    int pos,count;
+    printf("Enter position to delete: ");
+    scanf("%d", &pos);
+    count = count_records(*head);
+    if(pos>=count && pos<=1) {
+        printf("\nInvalid position\n");
+        return;
+    }
+    for(int i=1; i<=count; i++) {
+        if(i==pos) {
+            if(del==*head)
+                *head = del->next;
+            else {
+                prev->next = del->next;
+            }
+            free(del);
+            break;
+        }
+        prev = del;
+        del = del->next;
+    }
+    system("clear");
+    printf("\nRecord deleted\n");
+}
 
-int count_records(struct student * head) {
+void reverse_data(STUDENT *head) {
+    if(head==NULL) {
+        printf("\nNo records found\n");
+        return;
+    }
+    int count = count_records(head);
+    int i,j;
+
+    STUDENT *ptr1, *ptr2, *temp;
+
+    for(i=0; i<count/2; i++) {
+        ptr2 = ptr1;
+        for(j=0; j<count-1-i; j++) {
+            ptr2 = ptr2->next;
+        }
+        temp = ptr1;
+        ptr1 = ptr2;
+        ptr2 = temp;
+        ptr1 = ptr1->next;
+    }
+    system("clear");
+}
+
+int count_records(STUDENT * head) {
     int count = 0;
     while(head != NULL) {
         count++;
@@ -208,17 +363,20 @@ int count_records(struct student * head) {
     return count;
 }
 
-int search_record_by_id(struct student * head, int id) {
-    while(head != NULL) {
+int search_record_by_id(STUDENT * head, int id) {
+    if(head==NULL) {
+        return 0;
+    }
+    while(head) {
         if(head->id == id) {
-            return true;
+            return 1;
         }
         head = head->next;
     }
     return false;
 }
 
-int search_record_by_name(struct student * head, char * name) {
+int search_record_by_name(STUDENT * head, char * name) {
     while(head != NULL) {
         if(strcmp(head->name, name) == 0) {
             return true;
@@ -228,104 +386,164 @@ int search_record_by_name(struct student * head, char * name) {
     return false;
 }
 
-void save_csv_from_scratch(struct student * head) {
-    struct student * temp = head;
-    if(temp == NULL) {
+void save_csv_from_scratch(STUDENT * head) {
+    if(head == NULL) {
         printf("\nNo records found\n");
         return;
     }
-
-    FILE * fp = fopen("student.csv", "w");
-    fprintf(fp, "id,name,physics,chemistry,maths,total\n");
+    STUDENT * temp = head;
+    char temp_file_name[20];
+    printf("Enter file name to save: ");
+    scanf(" %[^\n]", temp_file_name);
+    strcat(temp_file_name, ".csv");
+    FILE * fp = fopen(temp_file_name, "w");
+    fprintf(fp, "id,name,physics,chemistry,maths,english,computer,total\n");
     while (temp != NULL) {
-        fprintf(fp, "%d , %s , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
+        fprintf(fp, "%d , %s , %d , %d , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->english, temp->computer, temp->total);
         temp = temp->next;
     }
     fclose(fp);
 }
 
-void append_csv(struct student * head) {
-    struct student * temp = head;
-    if(temp == NULL) {
+void append_csv(STUDENT * head) {
+    if(head == NULL) {
         printf("\nNo records found\n");
         return;
     }
-    FILE * fp = fopen("student.csv", "a");
+    STUDENT * temp = head;
+    char temp_file_name[20];
+    printf("Enter file name to save: ");
+    scanf(" %[^\n]", temp_file_name);
+    strcat(temp_file_name, ".csv");
+
+    FILE * fp = fopen(temp_file_name, "a");
+    
     while (temp != NULL) {
-        fprintf(fp, "%d , %s , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->total);
+        fprintf(fp, "%d , %s , %d , %d , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->english, temp->computer, temp->total);
         temp = temp->next;
     }
+    
     fclose(fp);
 }
-void load_csv(struct student ** head) {
+void load_csv(STUDENT ** head) {
     
     if((*head) != NULL) {
         printf("\nFile already loaded\n");
         return;
     }
-    FILE * fp = fopen("student.csv", "r");
+    char temp_file_name[20];
+    printf("Enter file name to save: ");
+    scanf(" %[^\n]", temp_file_name);
+    strcat(temp_file_name, ".csv");
+    FILE * fp = fopen(temp_file_name, "r");
     if (fp == NULL) {
         printf("\nFile not found\n");
         return;
     }
-    char bufftemp[38];
-    fgets(bufftemp, 38, fp);
-    struct student * new_node = (struct student *)malloc(sizeof(struct student));
-    struct student * temp=NULL;
-    while (fscanf(fp, "%d , %s , %d , %d , %d , %d\n", &new_node->id, new_node->name, &new_node->physics, &new_node->chemistry, &new_node->maths, &new_node->total) != EOF) {
-    new_node->next = NULL;
-        if (*head == NULL) {
+    int count = 0;
+    char bufftemp[55];
+    fgets(bufftemp, 55, fp);
+    STUDENT * new_node;
+    STUDENT * last;
+    new_node = (STUDENT *)malloc(sizeof(STUDENT));
+    while (fscanf(fp, "%d , %s , %d , %d , %d , %d , %d , %d\n", 
+        &new_node->id, new_node->name, &new_node->physics, &new_node->chemistry, &new_node->maths, 
+        &new_node->english, &new_node->computer,&new_node->total) != EOF) {
+        
+        new_node->next = NULL;
+        if (*head == NULL) 
             *head = new_node;
-            temp = new_node;
-        } else {
-            temp->next = new_node;
-            temp = new_node;
+        else {
+            last = *head;
+            while (last->next != NULL) {
+                last = last->next;
+            }
+            last->next = new_node;
         }
-        new_node = (struct student *)malloc(sizeof(struct student));  
+        new_node = (STUDENT *)malloc(sizeof(STUDENT));
+        printf("\nRecord added\n");
     }
     fclose(fp);
+    printf("\nFile loaded\n");
 }
 
-void sort_records_by_id(struct student ** head) {
-    struct student * temp = *head;
-    struct student * temp2 = NULL;
-    int count = count_records(*head);
+void sort_records_by_id(STUDENT * head) {
+    if(head == NULL) {
+        printf("\nNo records found\n");
+        return;
+    }
+    STUDENT temp;
+    STUDENT * ptr1=head, *ptr2=NULL;
+    int count = count_records(head);
+    int i, j;
+    printf("Processing...\n");
+    for(i=0; i<count-1; i++) {
+        ptr2 = ptr1->next;
+        for(j=0; j<count-1-i; j++) {
+            if(ptr1->id > ptr2->id) {
+                temp.id = ptr1->id;
+                strcpy(temp.name, ptr1->name);
+                temp.physics = ptr1->physics;
+                temp.chemistry = ptr1->chemistry;
+                temp.maths = ptr1->maths;
+                temp.english = ptr1->english;
+                temp.computer = ptr1->computer;
+                temp.total = ptr1->total;
+
+                ptr1->id = ptr2->id;
+                strcpy(ptr1->name, ptr2->name);
+                ptr1->physics = ptr2->physics;
+                ptr1->chemistry = ptr2->chemistry;
+                ptr1->maths = ptr2->maths;
+                ptr1->english = ptr2->english;
+                ptr1->computer = ptr2->computer;
+                ptr1->total = ptr2->total;
+
+                ptr2->id = temp.id;
+                strcpy(ptr2->name, temp.name);
+                ptr2->physics = temp.physics;
+                ptr2->chemistry = temp.chemistry;
+                ptr2->maths = temp.maths;
+                ptr2->english = temp.english;
+                ptr2->computer = temp.computer;
+                ptr2->total = temp.total;
+            }
+            ptr2 = ptr2->next;
+        }
+        ptr1 = ptr1->next;
+        printf("%d\n", i);
+    }
+    printf("\nRecords sorted\n");
+}
+
+void sort_records_by_name(STUDENT * head) {
+    if(head == NULL) {
+        printf("\nNo records found\n");
+        return;
+    }
+    STUDENT * ptr1 = head;
+    STUDENT * ptr2 = NULL;
+    STUDENT temp;
+    int count = count_records(head);
     int i, j;
     for(i=0; i<count-1; count++) {
+        ptr2 = ptr1->next;
         for(j=0; j<count-1-i; j++) {
-            if(temp->id > temp->next->id) {
-                temp2 = temp->next;
-                temp->next = temp->next->next;
-                temp2->next = temp;
-                *head = temp2;
+            if(strcmp(ptr1->name, ptr2->name) > 0) {
+                temp = *ptr1;
+                *ptr1 = *ptr2;
+                *ptr2 = temp;    
             }
-            temp = temp->next;
+            ptr2 = ptr2->next;
         }
+        ptr1 = ptr1->next;
     }
 }
 
-void sort_records_by_name(struct student ** head) {
-    struct student * temp = *head;
-    struct student * temp2 = NULL;
-    int count = count_records(*head);
-    int i, j;
-    for(i=0; i<count-1; count++) {
-        for(j=0; j<count-1-i; j++) {
-            if(strcmp(temp->name, temp->next->name) > 0) {
-                temp2 = temp->next;
-                temp->next = temp->next->next;
-                temp2->next = temp;
-                *head = temp2;
-            }
-            temp = temp->next;
-        }
-    }
-}
-
-void sort_csv_file(void) {
-    struct student * my_csv = NULL;
-    load_csv(&my_csv);
-    sort_records_by_id(&my_csv);
-    save_csv_from_scratch(my_csv);
-    delete_all_records(&my_csv);
+void sort_csv_file() {
+    STUDENT * csv_sort = NULL;
+    load_csv(&csv_sort);
+    sort_records_by_id(csv_sort);
+    save_csv_from_scratch(csv_sort);    
+    delete_all_records(&csv_sort);
 }
