@@ -4,15 +4,15 @@ void main() {
     STUDENT * head = NULL;
     int choice, count;
     while (1) {
-        printf("\n1. Add record at begining in database\n");
-        printf("2. Add record at end in database\n");
-        printf("3. Add record in middle in database\n");
-        printf("4. Clear Screen\n");
-        printf("5. Display all records by ascending order in database\n");
-        printf("6. Display all records by reverse order in database\n");
-        printf("7. Save all records in database to file\n");
-        printf("8. Append all records in database to file\n");
-        printf("9. Load all records in database from file\n");
+        printf("\n1.  Add record at begining in database\n");
+        printf("2.  Add record at end in database\n");
+        printf("3.  Add record in middle in database\n");
+        printf("4.  Clear Screen\n");
+        printf("5.  Display all records by ascending order in database\n");
+        printf("6.  Display all records by descending order in database\n");
+        printf("7.  Save all records in database to file\n");
+        printf("8.  Append all records in database to file\n");
+        printf("9.  Load all records in database from file\n");
         printf("10. Count all records in database\n");
         printf("11. Delete all record in database\n");
         printf("12. Delete record by id in database\n");
@@ -21,7 +21,7 @@ void main() {
         printf("15. Sort all records in database by name\n");
         printf("16. Reverse all records in database\n");
         printf("17. Sort any other csv file in present working directory\n");
-        printf("18. Open Query mode\n");
+        printf("18. Connect 2 CSVs\n");
         printf("19. Exit\n");
         printf("\nEnter your choice:  ");
         
@@ -79,7 +79,9 @@ void main() {
             case 17:
                 sort_csv_file();
                 break;
-
+            case 18:
+                connect_csv_files();
+                break;
             case 19:
                 exit(0);
                 break;
@@ -88,6 +90,29 @@ void main() {
                 break;
         }
     }
+}
+
+void connect_csv_files(void) {
+    char file1[20], file2[20];
+    printf("Enter name of first file: ");
+    scanf(" %s", file1);
+    printf("Enter name of second file: ");
+    scanf(" %s", file2);
+    FILE * fp1 = fopen(file1, "a+");
+    FILE * fp2 = fopen(file2, "r");
+    if (fp1 == NULL || fp2 == NULL) {
+        printf("File not found\n");
+        return;
+    }
+    char bufftemp[55];
+    fgets(bufftemp, 55, fp2);
+    char line[55];
+    while (fgets(line, 55, fp2)) {
+        fputs(line, fp1);
+    }
+    fclose(fp1);
+    fclose(fp2);
+
 }
 
 
@@ -238,7 +263,7 @@ void delete_all_records(STUDENT ** head) {
     }
     STUDENT * temp = *head;
     int count;
-    while (temp) {
+    while (*head) {
         *head = (*head)->next;
         free(temp);
         temp = *head;
@@ -461,7 +486,6 @@ void load_csv(STUDENT ** head) {
             last->next = new_node;
         }
         new_node = (STUDENT *)malloc(sizeof(STUDENT));
-        printf("\nRecord added\n");
     }
     fclose(fp);
     printf("\nFile loaded\n");
@@ -481,6 +505,11 @@ void sort_records_by_id(STUDENT * head) {
         ptr2 = ptr1->next;
         for(j=0; j<count-1-i; j++) {
             if(ptr1->id > ptr2->id) {
+
+                // temp = *ptr1;
+                // *ptr1 = *ptr2;
+                // *ptr2 = temp;
+
                 temp.id = ptr1->id;
                 strcpy(temp.name, ptr1->name);
                 temp.physics = ptr1->physics;
@@ -540,10 +569,55 @@ void sort_records_by_name(STUDENT * head) {
     }
 }
 
-void sort_csv_file() {
+void sort_csv_file() {  
+    char temp_file_name[20];
+    printf("Enter file name to save: ");
+    scanf(" %[^\n]", temp_file_name);
+    strcat(temp_file_name, ".csv");
+    FILE * fp = fopen(temp_file_name, "r");
+    if (fp == NULL) {
+        printf("\nFile not found\n");
+        return;
+    }
+
     STUDENT * csv_sort = NULL;
-    load_csv(&csv_sort);
+
+    int count = 0;
+    char bufftemp[55];
+    fgets(bufftemp, 55, fp);
+    STUDENT * new_node;
+    STUDENT * last;
+    new_node = (STUDENT *)malloc(sizeof(STUDENT));
+    while (fscanf(fp, "%d , %s , %d , %d , %d , %d , %d , %d\n", 
+        &new_node->id, new_node->name, &new_node->physics, &new_node->chemistry, &new_node->maths, 
+        &new_node->english, &new_node->computer,&new_node->total) != EOF) {
+        
+        new_node->next = NULL;
+        if (csv_sort == NULL) 
+            csv_sort = new_node;
+        else {
+            last = csv_sort;
+            while (last->next != NULL) {
+                last = last->next;
+            }
+            last->next = new_node;
+        }
+        new_node = (STUDENT *)malloc(sizeof(STUDENT));
+    }
+    printf("\nFile loaded\n");
+    
+    //Sort records by id
     sort_records_by_id(csv_sort);
-    save_csv_from_scratch(csv_sort);    
+    
+    rewind(fp);
+
+    fprintf(fp, "id,name,physics,chemistry,maths,english,computer,total\n");
+    STUDENT *temp = csv_sort;
+    while (temp != NULL) {
+        fprintf(fp, "%d , %s , %d , %d , %d , %d , %d , %d\n", temp->id, temp->name, temp->physics, temp->chemistry, temp->maths, temp->english, temp->computer, temp->total);
+        temp = temp->next;
+    }
+    fclose(fp);
+
     delete_all_records(&csv_sort);
 }
