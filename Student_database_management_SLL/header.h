@@ -48,6 +48,9 @@ void sort_records_by_id(STUDENT * head);
 void sort_records_by_name(STUDENT * head);
 void sort_csv_file(void);
 
+//Connect 2 CSV files
+void connect_csv_files(void);
+
 //Reverse records in database
 void reverse_data(STUDENT * head);
 
