@@ -1,0 +1,7 @@
+# 2 -  from-city
+# 4 - via-city
+# 6 - to-city
+# 8 - train no and name
+# 10 - platform number
+
+
