@@ -1,5 +1,6 @@
 #include"header.h"
 
+//Completed
 void admin_menu() {
     int userFound;
     userFound = admin_login();
