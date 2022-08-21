@@ -16,6 +16,8 @@
 #define MAX_EMAIL_LENGTH 25
 #define MAX_PHONE_LENGTH 15
 
+
+// Student structure
 typedef struct student {
     int id;
     char name[20];
@@ -28,6 +30,7 @@ typedef struct student {
     struct student * next;
 } STUDENT;
 
+// Structre for student login
 typedef struct user {
     int id;
 	char fullname[MAX_FULLNAME_LENGTH];
@@ -37,6 +40,7 @@ typedef struct user {
 	char phone[MAX_PHONE_LENGTH];
 } USER;
 
+//Admin Menu
 typedef struct admin {
     char fullname[MAX_FULLNAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
@@ -89,7 +93,7 @@ void connect_csv_files(void);
 void reverse_data(STUDENT * head);
 
 
-//User Authentication
+
 
 
 #endif // __header__
