@@ -1,4 +1,7 @@
 #include "header.h"
+
+//For student login purpose
+
 void student_menu() {
     int userFound = false;
     USER user_a = {};
