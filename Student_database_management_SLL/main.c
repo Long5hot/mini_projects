@@ -1,5 +1,7 @@
 #include "header.h"
 
+//Main function
+
 void main() {
     int choice;
     TRY_AGAIN:
