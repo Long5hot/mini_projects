@@ -33,7 +33,7 @@ void student_menu() {
         fp = fopen("student.csv", "r");
         STUDENT student = {};
         while (fscanf(fp, "%d , %s , %d , %d , %d , %d , %d , %d\n", 
-        &student.id, &student.name, &student.physics, &student.chemistry, &student.maths, 
+        &student.id, student.name, &student.physics, &student.chemistry, &student.maths, 
         &student.english, &student.computer,&student.total) != EOF) {
                 if(strcmp(student.name, user_a.fullname) == 0) {
 
